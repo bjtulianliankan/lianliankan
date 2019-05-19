@@ -3,3 +3,7 @@ Name：QinKuai
 Time：2019-5-17
 Content：创建仓库相关内容
 
+NO.2
+Name：QinKuai
+Time：2019-5-19
+Content：修改.gitignore，使得程序在VS运行后产生的相关文件不用上传到远端仓库
