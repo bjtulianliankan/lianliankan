@@ -1,9 +1,19 @@
-NO.1
+No.4
 Name：QinKuai
-Time：2019-5-17
-Content：创建仓库相关内容
+Time：2019-5-21
+Content：大修改，在原有的解决方案下，新增一个项目以供Server单独运作
 
-NO.2
+No.3
+Name：QinKuai
+Time：2019-5-21
+Content：完成CS两端，数据传输的序列化和反序列化功能
+
+No.2
 Name：QinKuai
 Time：2019-5-19
 Content：修改.gitignore，使得程序在VS运行后产生的相关文件不用上传到远端仓库
+
+No.1
+Name：QinKuai
+Time：2019-5-17
+Content：创建仓库相关内容

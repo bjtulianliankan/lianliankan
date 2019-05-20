@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lianliankan", "lianliankan\lianliankan.vcxproj", "{C235ABC4-FF83-44B6-9E73-1AB6A2BB1C68}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lianliankan_server", "lianliankan_server\lianliankan_server.vcxproj", "{365B45B5-7938-4D16-9C93-F3F31EA967BD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{C235ABC4-FF83-44B6-9E73-1AB6A2BB1C68}.Release|x64.Build.0 = Release|x64
 		{C235ABC4-FF83-44B6-9E73-1AB6A2BB1C68}.Release|x86.ActiveCfg = Release|Win32
 		{C235ABC4-FF83-44B6-9E73-1AB6A2BB1C68}.Release|x86.Build.0 = Release|Win32
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Debug|x64.ActiveCfg = Debug|x64
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Debug|x64.Build.0 = Debug|x64
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Debug|x86.ActiveCfg = Debug|Win32
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Debug|x86.Build.0 = Debug|Win32
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Release|x64.ActiveCfg = Release|x64
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Release|x64.Build.0 = Release|x64
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Release|x86.ActiveCfg = Release|Win32
+		{365B45B5-7938-4D16-9C93-F3F31EA967BD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
