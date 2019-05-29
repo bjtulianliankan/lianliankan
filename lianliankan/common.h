@@ -1,15 +1,20 @@
 /*
 * Name: QinKuai
 */
-
+#pragma once
 #ifndef COMMON_H
 #define COMMON_H
+//引用Windows环境下的网络头文件
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#include <iostream>
+#pragma comment(lib, "Ws2_32.lib")
 
 #define SERVER_IP "127.0.0.1"
 
 #define SERVER_PORT 8888
 
-#define BUUFER_SIZE 0x1000 // 4096
+#define BUFFER_SIZE 0x1000 // 4096
 
 #define CHARS_MAX_LENGTH 0x1000 //4096 4kB
 
@@ -42,11 +47,11 @@
 //定义CS两端在游戏结束时相关数据
 //所对应的操作码
 //信息更新
-#define GAME_UPDATE 9
+#define USERDATA_UPDATE 9
 //信息上传成功
-#define GAME_UPDATE_SUCCESS 10
+#define USEREDATA_UPDATE_SUCCESS 10
 //信息上传失败
-#define GAME_UPDATE_FAIL 11
+#define USERDATA_UPDATE_FAIL 11
 
 //定义CS两端在排行榜申请时的相关数据
 //所对应的操作码
@@ -56,6 +61,8 @@
 #define RANKING_SUCCESS 13
 //申请排行榜数据失败
 #define RANKING_FAIL 14
+
+//#define LOG(logMsg) std::cout << "[LOG]" << "[" << __DATE__ << " " << __TIME__ << "][" << __FILE__ << "][" << __LINE__ << "]" << logMsg << std::endl;
 
 #endif // !COMMON_H
 

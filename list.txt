@@ -1,3 +1,8 @@
+No.5
+Name：QinKuai
+Time：2019-5-30
+Content：基本完成Server类相关的所有内容（如果想本地重现Server，请务必配置好VS连接MySQL的相关内容）
+
 No.4
 Name：QinKuai
 Time：2019-5-21

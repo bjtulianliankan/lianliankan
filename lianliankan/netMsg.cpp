@@ -3,7 +3,6 @@
 * Status: Finished
 */
 
-#include "stdafx.h"
 #include "netMsg.h"
 
 NetMsg::NetMsg() {
@@ -40,7 +39,7 @@ list<User> users:{
 }
 通过对象调用序列化函数后
 将传入的字符串数组直接传入该对象的对应数据
-字符串数组的大小不小于BUFFER_SIZE(4kB)
+字符串数组的大小不小于CHARS_MAX_LENGTH(4kB)
 */
 int NetMsg::serialize(char*& chars) {
 	int count = 0;
@@ -99,14 +98,18 @@ int NetMsg::serialize(char*& chars) {
 /*
 *序列化结构：
 command:int
-username_length:int
-username:char*
-password_length:int
-password:char*
-score:int
-coins:int
-TDItems:int
-TPItems:int
+list<User> users:{
+	User:{
+		username_length:int
+		username:char*
+		password_length:int
+		password:char*
+		score:int
+		coins:int
+		TDItems:int
+		TPItems:int
+	}
+}
 通过对象调用反序列化函数后
 该对象直接完成数据传输
 */
