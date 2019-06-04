@@ -5,9 +5,6 @@
 #include "tool.h"
 
 int numberLength(int number) {
-	if (number == 0) {
-		return 1;
-	}
 	int digit = 0;
 	while (number != 0) {
 		number /= 10;

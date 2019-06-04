@@ -7,11 +7,7 @@
 #ifndef USERDATABASE_H
 #define USERDATABASE_H
 
-#define SUCCESS true
-#define FAIL false
-
-#include <string>
-#include <sstream>
+#include "databaseCommon.h"
 //#include <jdbc/mysql_connection.h>
 #include <jdbc/cppconn/driver.h>
 #include <jdbc/cppconn/exception.h>
@@ -39,9 +35,6 @@ private:
 	UserDatabase();
 	//创建用户数据库对象时初始化与数据库的连接
 	static bool init();
-	//实现int和string的转换
-	//方便翻译为sql语句
-	static std::string intToString(const int);
 
 	//数据库相关配置
 	static sql::Driver *driver;

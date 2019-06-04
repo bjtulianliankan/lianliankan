@@ -24,7 +24,7 @@
 
 #define USHORT_LENGTH 2
 
-#define DEFAULT_COMMAND 0;
+#define DEFAULT_COMMAND 0
 //定义CS两端在登陆、注册和登出相关操作
 //所对应的操作码
 //注册操作

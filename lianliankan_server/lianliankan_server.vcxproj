@@ -125,6 +125,9 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="databaseCommon.cpp" />
+    <ClCompile Include="rankBase.cpp" />
+    <ClCompile Include="rankDatabase.cpp" />
     <ClCompile Include="tool.cpp" />
     <ClCompile Include="userBase.cpp" />
     <ClCompile Include="userDatabase.cpp" />
@@ -135,7 +138,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
+    <ClInclude Include="databaseCommon.h" />
+    <ClInclude Include="gameSettings.h" />
     <ClInclude Include="log.h" />
+    <ClInclude Include="rankBase.h" />
+    <ClInclude Include="rankDatabase.h" />
     <ClInclude Include="tool.h" />
     <ClInclude Include="userBase.h" />
     <ClInclude Include="userDatabase.h" />

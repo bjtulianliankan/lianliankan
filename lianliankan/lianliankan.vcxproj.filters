@@ -42,6 +42,9 @@
     <ClInclude Include="netMsg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lianliankan.cpp">
@@ -60,6 +63,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="netMsg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,22 +19,24 @@ UserDatabase::UserDatabase() {}
 bool UserDatabase::databaseToUsers() {
 	if (!init()) {
 		LOG("数据库初始化失败")
-		return false;
+		return DB_FAIL;
 	}
 	try {
 		stmt =  conn->createStatement();
-		 res =  stmt->executeQuery("select * from users;");
+		res =  stmt->executeQuery("select * from users;");
 		while (res->next()) {
 			//用户名和密码
-			std::string username = res->getString("username").c_str();
-			std::string passwd = res->getString("password").c_str();
+			std::string username = res->getString("username");
+			std::string passwd = res->getString("password");
 			User *user = new User(username, passwd);
+
+			//用户ID
+			user->setID(res->getInt("ID"));
 
 			//用户分数
 			user->setScore(res->getInt("score"));
 			user->setClearGameNumber(res->getInt("clearLevel"));
-			const char* chars = res->getString("gameScore").c_str();
-			user->charsToScoreArray(chars);
+			user->charsToScoreArray(res->getString("gameScore"));
 
 			//用户道具
 			user->setCoins(res->getInt("coins"));
@@ -52,9 +54,9 @@ bool UserDatabase::databaseToUsers() {
 		LOG(e.what());
 		LOG(e.getErrorCode());
 		LOG(e.getSQLState());
-		return FAIL;
+		return DB_FAIL;
 	}
-	return SUCCESS;
+	return DB_SUCCESS;
 }
 
 //添加用户信息
@@ -63,25 +65,25 @@ bool UserDatabase::addToDatabase(User& user) {
 		stmt = conn->createStatement();
 		sql::SQLString str = "insert into users values('";
 		//用户名
-		str.append(user.getUserName().c_str());
+		str.append(user.getUserName());
 		str.append("', '");
 		//用户密码
-		str.append(user.getPassword().c_str());
+		str.append(user.getPassword());
 		str.append("', ");
 		//总分数
-		str.append(intToString(user.getScore()).c_str());
+		str.append(intToString(user.getScore()));
 		str.append(", ");
 		//金币数
-		str.append(intToString(user.getCoins()).c_str());
+		str.append(intToString(user.getCoins()));
 		str.append(", ");
 		//道具数量
-		str.append(intToString(user.getReconstructItemAmount()).c_str());
+		str.append(intToString(user.getReconstructItemAmount()));
 		str.append(", ");
 		//道具数量
-		str.append(intToString(user.getTimeDelayItemAmount()).c_str());
+		str.append(intToString(user.getTimeDelayItemAmount()));
 		str.append(", ");
 		//已通关的关卡数目
-		str.append(intToString(user.getClearGameNumber()).c_str());
+		str.append(intToString(user.getClearGameNumber()));
 		str.append(", '");
 		//每局分数组成的字符串
 		char temp[100];
@@ -89,23 +91,26 @@ bool UserDatabase::addToDatabase(User& user) {
 		char* tempChar = temp;
 		user.scoreArrayTochars(tempChar);
 		str.append(tempChar);
-		str.append("');");
+		str.append("',");
+		//用户在服务器中注册的ID
+		str.append(intToString(user.getID()));
+		str.append(");");
 
 		//for check
 		//std::cout << str << std::endl;
 		bool result = stmt->execute(str);
 		if (result) {
 			delete stmt;
-			return FAIL;
+			return DB_FAIL;
 		}
 		delete stmt;
 	} catch (sql::SQLException &e) {
 		LOG(e.what());
 		LOG(e.getErrorCode());
 		LOG(e.getSQLState());
-		return FAIL;
+		return DB_FAIL;
 	}
-	return SUCCESS;
+	return DB_SUCCESS;
 }
 
 //删去用户信息
@@ -113,7 +118,7 @@ bool UserDatabase::deleteToDatabase(User& user) {
 	try {
 		stmt = conn->createStatement();
 		sql::SQLString str = "delete from users where username='";
-		str.append(user.getUserName().c_str());
+		str.append(user.getUserName());
 		str.append("';");
 
 		//for check
@@ -122,7 +127,7 @@ bool UserDatabase::deleteToDatabase(User& user) {
 
 		if (result) {
 			delete stmt;
-			return FAIL;
+			return DB_FAIL;
 		}
 		delete stmt;
 	}
@@ -130,9 +135,9 @@ bool UserDatabase::deleteToDatabase(User& user) {
 		LOG(e.what());
 		LOG(e.getErrorCode());
 		LOG(e.getSQLState());
-		return FAIL;
+		return DB_FAIL;
 	}
-	return SUCCESS;
+	return DB_SUCCESS;
 }
 
 //更新用户信息
@@ -140,15 +145,15 @@ bool UserDatabase::updateToDatabase(User& user) {
 	try {
 		stmt = conn->createStatement();
 		sql::SQLString str = "update users set score=";
-		str.append(intToString(user.getScore()).c_str());
+		str.append(intToString(user.getScore()));
 		str.append(", coins=");
-		str.append(intToString(user.getCoins()).c_str());
+		str.append(intToString(user.getCoins()));
 		str.append(", RecItems=");
-		str.append(intToString(user.getReconstructItemAmount()).c_str());
+		str.append(intToString(user.getReconstructItemAmount()));
 		str.append(", TDItems=");
-		str.append(intToString(user.getTimeDelayItemAmount()).c_str());
+		str.append(intToString(user.getTimeDelayItemAmount()));
 		str.append(", clearLevel=");
-		str.append(intToString(user.getClearGameNumber()).c_str());
+		str.append(intToString(user.getClearGameNumber()));
 		str.append(", gameScore=");
 		char temp[100];
 		memset(temp, 0, 100);
@@ -158,14 +163,14 @@ bool UserDatabase::updateToDatabase(User& user) {
 		str.append(tempChar);
 		str.append("'");
 		str.append(" where username='");
-		str.append(user.getUserName().c_str());
+		str.append(user.getUserName());
 		str.append("';");
 
 		//for check
 		//std::cout << str << std::endl;
 		int result = stmt->executeUpdate(str);
 		if (!result) {
-			return FAIL;
+			return DB_FAIL;
 		}
 		delete stmt;
 	}
@@ -173,9 +178,9 @@ bool UserDatabase::updateToDatabase(User& user) {
 		LOG(e.what());
 		LOG(e.getErrorCode());
 		LOG(e.getSQLState());
-		return FAIL;
+		return DB_FAIL;
 	}
-	return SUCCESS;
+	return DB_SUCCESS;
 }
 
 //此方法来关闭数据库连接
@@ -195,19 +200,10 @@ bool UserDatabase::init() {
 		//连接MySQL数据库lianliankan
 		conn->setSchema("lianliankan");
 	} catch (sql::SQLException &e) {
-		LOG(e.what());
-		LOG(e.getErrorCode());
-		LOG(e.getSQLState());
-		return FAIL;
+		LOG(e.what())
+		LOG(e.getErrorCode())
+		LOG(e.getSQLState())
+		return DB_FAIL;
 	}
-	return SUCCESS;
+	return DB_SUCCESS;
 }
-
-//实现int和string的转换
-//方便翻译为sql语句
-std::string UserDatabase::intToString(const int number) {
-	std::stringstream ss;
-	ss << number;
-	return ss.str();
-}
-

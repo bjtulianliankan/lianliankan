@@ -78,6 +78,9 @@ void Server::start() {
 	char* recv_buf = new char[BUFFER_SIZE];
 	//返还客户端缓存区
 	char* send_buf = new char[BUFFER_SIZE];
+	//若请求排行榜
+	//则存入关卡序号信息
+	int level = 0;
 
 	while (true) {
 		//socekt断开直接退出服务器运行
@@ -98,20 +101,27 @@ void Server::start() {
 		//确定客户端请求类型
 		NetMsg *client_request = new NetMsg();
 		//将客户端请求信息
-		//反序列化加载到对象中
-		client_request->deserialize(recv_buf, DEFAULT_MODE);
+		//首先进行command的解析
+		//初步确定请求类型
+		int command = client_request->command_deserialize(recv_buf);
+		if (command !=RANKING ) {
+			//反序列化加载到对象中
+			client_request->deserialize(recv_buf, DEFAULT_MODE);
+		} else {
+			//解析用户发来的排行榜请求
+			client_request->server_ranking_deserialize(recv_buf, level);
+		}
 
 		//返还客户端时的序列化对象指针
 		NetMsg *send_back = nullptr;
 
-
 		//此时的client_request已经时解析好的NetMsg对象了
-		switch (client_request->getCommand()) {
+		switch (command) {
 		case REGISTER:
 			//服务器端实现用户注册
 			 send_back = userRegister(client_request);
 
-			client_request->serialize(send_buf, SECRET_MODE);
+			send_back->serialize(send_buf, SECRET_MODE);
 			//向客户端返还注册情况
 			send(client, send_buf, BUFFER_SIZE, 0);
 				
@@ -122,7 +132,7 @@ void Server::start() {
 			//服务器端实现用户登陆
 			 send_back = userLogin(client_request);
 
-			 client_request->serialize(send_buf, SECRET_MODE);
+			 send_back->serialize(send_buf, SECRET_MODE);
 			 //向客户端返还登陆情况
 			 send(client, send_buf, BUFFER_SIZE, 0);
 			 
@@ -133,7 +143,7 @@ void Server::start() {
 			//服务器端实现用户登出
 			 send_back = userLogout(client_request);
 
-			 client_request->serialize(send_buf, SECRET_MODE);
+			 send_back->serialize(send_buf, SECRET_MODE);
 			 //向客户端返还登出情况
 			 send(client, send_buf, BUFFER_SIZE, 0);
 
@@ -144,7 +154,7 @@ void Server::start() {
 			//服务器端实现用户数据更新
 			 send_back = userdataUpdate(client_request);
 
-			 client_request->serialize(send_buf, SECRET_MODE);
+			 send_back->serialize(send_buf, SECRET_MODE);
 			 //向客户端返还用户数据更新情况
 			 send(client, send_buf, BUFFER_SIZE, 0);
 			 
@@ -153,7 +163,14 @@ void Server::start() {
 			continue;
 		case RANKING:
 			//服务器端实现排名返还
-			send_back = userRanking();
+			send_back = userRanking(client_request, level);
+
+			send_back->server_ranking_serialize(send_buf, level);
+			//向客户端返还排名情况
+			send(client, send_buf, BUFFER_SIZE, 0);
+
+			delete client_request;
+			delete send_back;
 			continue;
 		}
 	}
@@ -188,17 +205,37 @@ NetMsg* Server::userRegister(NetMsg* msg) {
 		return send_back;
 	}
 
+	//确定新注册用的ID
+	user->setID(UserBase::getUsersLength() + 1);
+
 	//写入数据库中
 	bool result = UserDatabase::addToDatabase(*user);
 	if (!result) {
 		send_back->setCommand(REGISTER_FAIL);
-		log.append(" 写入数据库失败，注册失败");
+		log.append(" 写入用户数据库失败，注册失败");
 		LOG(log)
 		return send_back;
 	}
 
 	//添加到UserBase上
 	UserBase::getUserBase()->addUser(*user);
+
+	//添加到RankBase上
+	RankBase::getRankBase()->insertToRankBase(user->getID());
+
+	//写入排行榜数据库
+	std::string str("");
+	//i表示gameLevel
+	for (int i = 0; i <= GAMEAMOUNT; i++) {
+		str = RankBase::getRankBase()->scoreRankToString(i);
+		result = RankDatabase::updateToDatabase(i, str);
+		if (!result) {
+			send_back->setCommand(REGISTER_FAIL);
+			log.append(" 写入排行榜数据库失败，注册失败");
+			LOG(log)
+			return send_back;
+		}
+	}
 	
 	send_back->setCommand(REGISTER_SUCCESS);
 	log.append(" 注册成功");
@@ -284,16 +321,34 @@ NetMsg* Server::userdataUpdate(NetMsg* msg) {
 	}
 
 	//更新用户信息
-	//分数相关信息
-	user_in_server->setScore(user->getScore());
-	user_in_server->setClearGameNumber(user->getClearGameNumber());
-	for (int i = 1; i <= user_in_server->getClearGameNumber(); i++) {
-		user_in_server->setGameScore(user->getGameScore(i), i);
-	}
 	//道具相关信息
 	user_in_server->setCoins(user->getCoins());
 	user_in_server->setReconstructItemAmount(user->getReconstructItemAmount());
 	user_in_server->setTimeDelayItemAmount(user->getTimeDelayItemAmount());
+	//更新分数相关信息
+	user_in_server->setScore(user->getScore());
+	user_in_server->setClearGameNumber(user->getClearGameNumber());
+	for (int i = 1; i <= GAMEAMOUNT; i++) {
+		user_in_server->setGameScore(user->getGameScore(i), i);
+	}
+
+	//添加到RankBase上
+	RankBase::getRankBase()->updateToRankBase(user_in_server->getID());
+
+	//写入RankDatabase中
+	//写入排行榜数据库
+	std::string str("");
+	//i表示gameLevel
+	for (int i = 0; i <= GAMEAMOUNT; i++) {
+		str = RankBase::getRankBase()->scoreRankToString(i);
+		result = RankDatabase::updateToDatabase(i, str);
+		if (!result) {
+			send_back->setCommand(USERDATA_UPDATE_FAIL);
+			log.append(" 写入排行榜数据库失败，数据更新失败");
+			LOG(log)
+			return send_back;
+		}
+	}
 
 	//设置数据更新成功
 	send_back->setCommand(USEREDATA_UPDATE_SUCCESS);
@@ -307,7 +362,33 @@ NetMsg* Server::userdataUpdate(NetMsg* msg) {
 /*
 服务器排行榜请求
 */
-NetMsg* Server::userRanking() {
-	return nullptr;
+NetMsg* Server::userRanking(NetMsg* msg, int level) {
+	User* user = &msg->getUsers().front();
+	NetMsg *send_back = new NetMsg();
+	
+	std::string log = user->getUserName();
 
+	std::vector<int> ranking = RankBase::getRankBase()->getRankByLevel(level);
+	for (std::vector<int>::iterator it =ranking.begin(); it < ranking.end(); it++) {
+		User* newUser = new User("", "");
+		int id = *it;
+		//排行榜在此处没有对应用户
+		//返回空字符串和0
+		if (id == 0) {
+			newUser->setUserName("NULL");
+			newUser->setRankScore(0, level);
+		} else {
+			User* user_in_server = UserBase::getUserBase()->findUser(id);
+			newUser->setID(id);
+			newUser->setRankScore(user_in_server->getRankScore(level), level);
+			newUser->setUserName(user_in_server->getUserName());
+		}
+
+		send_back->addUserToList(*newUser);
+	}
+
+	
+	log.append(" 请求排行榜数据成功");
+	LOG(log)
+	return send_back;
 }

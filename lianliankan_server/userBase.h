@@ -10,6 +10,7 @@
 #include <list>
 #include "user.h"
 
+//for test
 #include <iostream>
 
 //该类用以在服务器运行时直接将数据库中的用户数据
@@ -26,6 +27,12 @@ public:
 	//查询用户
 	User* findUser(std::string);
 	User* findUser(std::string, std::string);
+	User* findUser(int id);
+
+	//获取当前用户列表的长度
+	//并起到记录当前最大用户ID
+	//用于新用户注册时确定ID
+	static int getUsersLength();
 
 	//for test
 	void showAll();
@@ -34,7 +41,7 @@ private:
 	//实现单实例
 	static UserBase* userBaseInstance;
 	//该实例中维护一个用户列表
-	std::list<User> users;
+	static std::list<User> users;
 };
 
 #endif // !USERBASE_H

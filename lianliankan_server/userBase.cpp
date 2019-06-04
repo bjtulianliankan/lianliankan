@@ -7,6 +7,7 @@
 
 //静态变量初始化
 UserBase* UserBase::userBaseInstance = nullptr;
+std::list<User> UserBase::users(0);
 
 UserBase::UserBase() {}
 
@@ -49,6 +50,24 @@ User* UserBase::findUser(std::string username, std::string passwd) {
 		}
 	}
 	return nullptr;
+}
+
+//通过用户的ID查找到用户
+User* UserBase::findUser(int id) {
+	if (id <= 0 && id > this->users.size()) {
+		return nullptr;
+	}
+	for (std::list<User>::iterator it = this->users.begin(); it != this->users.end(); it++) {
+		if (it->getID() == id) {
+			return &(*it);
+		}
+	}
+	return nullptr;
+}
+
+//获取当前用户列表的长度
+int UserBase::getUsersLength() {
+	return users.size();
 }
 
 //for test

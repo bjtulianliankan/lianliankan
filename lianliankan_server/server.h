@@ -18,6 +18,8 @@
 #include "log.h"
 #include "userBase.h"
 #include "userDatabase.h"
+#include "rankBase.h"
+#include "rankDatabase.h"
 
 #define HELPMSG std::cout<<"**    exit: exit the server\n**    help: to know command\n";
 #define CMDERROR std::cout<<"**    INVALID COMMAND LINE\n";
@@ -35,7 +37,7 @@ public:
 	NetMsg* userLogin(NetMsg*);
 	NetMsg* userLogout(NetMsg*);
 	NetMsg* userdataUpdate(NetMsg*);
-	NetMsg* userRanking();
+	NetMsg* userRanking(NetMsg*, int);
 private:
 	//TCP socket的地址结构
 	SOCKADDR_IN addr;

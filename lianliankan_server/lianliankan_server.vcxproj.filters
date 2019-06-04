@@ -36,6 +36,15 @@
     <ClCompile Include="tool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="rankDatabase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="rankBase.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="databaseCommon.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">
@@ -60,6 +69,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="tool.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="rankDatabase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="rankBase.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="databaseCommon.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gameSettings.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

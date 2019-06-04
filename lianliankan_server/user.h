@@ -6,16 +6,13 @@
 #ifndef USER_H
 #define USER_H
 
-#ifndef INT_LENGTH
-#define INT_LENGTH 4
-#endif // !INT_LENGTH
-
 #define SPLIT_FLAG '$'
 
 #include <string>
 #include <string.h>
-#include "tool.h"
 #include <vector>
+#include "gameSettings.h"
+#include "tool.h"
 
 typedef unsigned short ushort;
 
@@ -24,6 +21,8 @@ public:
 	User();
 	User(std::string, std::string);
 
+	int getID();
+	void setID(int);
 	std::string getUserName();
 	void setUserName(std::string);
 	std::string getPassword();
@@ -31,16 +30,25 @@ public:
 
 	int getScore();
 	void setScore(int);
+	void updateScore();
 	ushort getClearGameNumber();
 	void setClearGameNumber(ushort);
 	int getGameScore(int);
 	void setGameScore(int, int);
+	//获取在排行榜中索引对应的分数
+	//0表示总分
+	//之后的整数表示单据分数
+	int getRankScore(int);
+	//设置在排行榜中索引对应的分数
+	//0表示总分
+	//之后的整数表示对应gameLevel的分数
+	void setRankScore(int, int);
 	//将每局得分组成的数组转化为字符串
 	//以便于存入数据库
 	int scoreArrayTochars(char*&);
 	//将每局得分的字符串转化为等分数组
 	//以便得出数据库中的数据
-	int charsToScoreArray(const char*&);
+	int charsToScoreArray(const std::string&);
 
 	int getCoins();
 	void setCoins(int);
@@ -52,6 +60,8 @@ public:
 	bool getLoginStatus();
 	void setLoginStatus(bool);
 private:
+	//用户对应的ID
+	int ID;
 	//用户名
 	//15个字符以内
 	std::string userName;
