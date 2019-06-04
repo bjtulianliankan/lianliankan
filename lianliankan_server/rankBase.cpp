@@ -1,6 +1,6 @@
 /*
 * Name: QinKuai
-* Status: Unfinished
+* Status: Finished
 */
 
 #include "rankBase.h"

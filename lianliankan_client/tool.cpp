@@ -1,6 +1,6 @@
 /*
 * Name: QinKuai
-* Status: Finished
+* Status: Finised
 */
 #include "tool.h"
 

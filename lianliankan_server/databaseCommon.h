@@ -1,3 +1,7 @@
+/*
+* Name: QinKuai
+* Status: Finished
+*/
 #pragma once
 
 #ifndef DATABASECOMMON_H

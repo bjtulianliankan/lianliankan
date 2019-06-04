@@ -1,3 +1,7 @@
+/*
+* Name: QinKuai
+* Status: Finished
+*/
 #include "databaseCommon.h"
 
 //实现int和string的转换
