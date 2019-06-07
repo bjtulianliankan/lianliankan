@@ -60,7 +60,7 @@ public:
 
 	//解析出字符串中的command类型
 	//返回command
-	int command_deserialize(char*&);
+	ushort command_deserialize(char*&);
 
 	void addUserToList(User&);
 	std::vector<User>& getUsers();

@@ -56,6 +56,8 @@ public:
 	void setReconstructItemAmount(ushort);
 	ushort getTimeDelayItemAmount();
 	void setTimeDelayItemAmount(ushort);
+	ushort getPropmtItemAmount();
+	void setPropmtItemAmount(ushort);
 
 	bool getLoginStatus();
 	void setLoginStatus(bool);
@@ -84,6 +86,8 @@ private:
 	ushort timeDelayItemAmount;
 	//重构道具持有数
 	ushort reconstructItemAmount;
+	//提示道具持有数
+	ushort propmtItemAmount;
 
 	//记录用户的登陆状态
 	bool loginStatus;

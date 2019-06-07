@@ -45,6 +45,7 @@ list<User> users:{
 		coins: int 4
 		TDItems: ushort 2
 		reconstructItems: ushort 2
+		ptItems: ushort 2
 	}
 }
 通过对象调用序列化函数后
@@ -116,6 +117,11 @@ int NetMsg::serialize(char*& chars, int mode) {
 		//RecItems
 		ushort recItems = (*it).getReconstructItemAmount();
 		memcpy(chars + count, &recItems, USHORT_LENGTH);
+		count += USHORT_LENGTH;
+
+		//PtItems
+		ushort ptItems = (*it).getPropmtItemAmount();
+		memcpy(chars + count, &ptItems, USHORT_LENGTH);
 		count += USHORT_LENGTH;
 	}
 
@@ -227,6 +233,7 @@ list<User> users:{
 		coins: int 4
 		TDItems: ushort 2
 		reconstructItems: ushort 2
+		ptItems: ushort 2
 	}
 }
 通过对象调用反序列化函数后
@@ -347,6 +354,14 @@ int NetMsg::deserialize(const char* chars, int mode) {
 		newUser->setReconstructItemAmount(recItems);
 		offset += USHORT_LENGTH;
 
+		//解析PtItems
+		int ptItems = 0;
+		memcpy(&ptItems, chars + offset, USHORT_LENGTH);
+		if (ptItems < 0) {
+			return -1;
+		}
+		offset += USHORT_LENGTH;
+
 		this->users.push_back(*newUser);
 	}
 
@@ -412,7 +427,7 @@ int NetMsg::client_ranking_deserialize(char*& chars, int& level) {
 		if (score < 0) {
 			return -1;
 		}
-		newUser->setScore(score);
+		newUser->setRankScore(score, level);
 		offset += INT_LENGTH;
 		
 		this->users.push_back(*newUser);
@@ -466,13 +481,13 @@ int NetMsg::server_ranking_deserialize(char*& chars, int& level) {
 	return offset;
 }
 
-int NetMsg::command_deserialize(char*& chars) {
+ushort NetMsg::command_deserialize(char*& chars) {
 	int offset = 0;
 
 	//解析出字符串中的command
-	int command = DEFAULT_COMMAND;
-	memcpy(&command, chars + offset, INT_LENGTH);
-	offset += INT_LENGTH;
+	ushort command = DEFAULT_COMMAND;
+	memcpy(&command, chars + offset, USHORT_LENGTH);
+	offset += USHORT_LENGTH;
 
 	return command;
 }

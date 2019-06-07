@@ -30,9 +30,10 @@ bool Server::init() {
 	}
 
 	//初始化TCP socket的结构
+	//PF_INET == AF_INET
 	this->addr.sin_family = PF_INET;
 	this->addr.sin_port = htons(SERVER_PORT);
-	inet_pton(AF_INET, SERVER_IP, &this->addr.sin_addr.s_addr);
+	inet_pton(PF_INET, SERVER_IP, &this->addr.sin_addr.s_addr);
 
 	//创建socket
 	this->socket1 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -47,7 +48,7 @@ bool Server::init() {
 	if (bind(this->socket1, (LPSOCKADDR)&this->addr, sizeof(this->addr)) == SOCKET_ERROR) {
 		LOG("Socket无法绑定")
 		return false;
-	}
+	}	
 
 	int ret = listen(this->socket1, 1);
 
@@ -84,7 +85,7 @@ void Server::start() {
 
 	while (true) {
 		//socekt断开直接退出服务器运行
-		if (this->socket1) {
+		if (!this->socket1) {
 			delete[] recv_buf;
 			return;
 		}
@@ -95,15 +96,28 @@ void Server::start() {
 		SOCKADDR_IN client_addr;
 		socklen_t client_length = sizeof(client_addr);
 		SOCKET client = accept(this->socket1, (struct sockaddr*)&client_addr, &client_length);
+		if (client == SOCKET_ERROR) {
+			LOG("服务器网络断开")
+			return;
+		}
+		char log[INET_ADDRSTRLEN];
+		std::string str = inet_ntop(PF_INET, &client_addr.sin_addr, log, sizeof(log));
+		str += "连入服务器";
+		LOG(str);
 		int len = recv(client, recv_buf, BUFFER_SIZE, 0);
 		
+		LOG("test1");
+		std::cout << len << std::endl;
 		//创建反序列化对象
 		//确定客户端请求类型
 		NetMsg *client_request = new NetMsg();
 		//将客户端请求信息
 		//首先进行command的解析
 		//初步确定请求类型
+		std::cout << "command deser" << std::endl;
 		int command = client_request->command_deserialize(recv_buf);
+		std::cout << "command deser end" << std::endl;
+		std::cout << command << std::endl;
 		if (command !=RANKING ) {
 			//反序列化加载到对象中
 			client_request->deserialize(recv_buf, DEFAULT_MODE);
@@ -111,6 +125,9 @@ void Server::start() {
 			//解析用户发来的排行榜请求
 			client_request->server_ranking_deserialize(recv_buf, level);
 		}
+		LOG("point3");
+
+		std::cout << (command == REGISTER) << std::endl;
 
 		//返还客户端时的序列化对象指针
 		NetMsg *send_back = nullptr;
@@ -118,12 +135,15 @@ void Server::start() {
 		//此时的client_request已经时解析好的NetMsg对象了
 		switch (command) {
 		case REGISTER:
+			LOG("test2")
 			//服务器端实现用户注册
 			 send_back = userRegister(client_request);
 
 			send_back->serialize(send_buf, SECRET_MODE);
+			LOG("recv from client end")
 			//向客户端返还注册情况
 			send(client, send_buf, BUFFER_SIZE, 0);
+			LOG("send to client end")
 				
 			delete client_request;
 			delete send_back;
@@ -184,6 +204,7 @@ void Server::close() {
 		closesocket(this->socket1);
 	}
 	WSACleanup();
+	Sleep(100);
 	LOG("服务器正常退出")
 }
 
@@ -194,6 +215,7 @@ NetMsg* Server::userRegister(NetMsg* msg) {
 	User *user = &msg->getUsers().front();
 	//服务器端的本地LOG消息
 	std::string log = user->getUserName();
+	LOG(user->getUserName() + "请求注册")
 
 	NetMsg* send_back = new NetMsg();
 
@@ -388,6 +410,7 @@ NetMsg* Server::userRanking(NetMsg* msg, int level) {
 	}
 
 	
+	send_back->setCommand(RANKING_SUCCESS);
 	log.append(" 请求排行榜数据成功");
 	LOG(log)
 	return send_back;

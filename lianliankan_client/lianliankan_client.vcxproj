@@ -124,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="client.cpp" />
+    <ClCompile Include="clientTest.cpp" />
     <ClCompile Include="netMsg.cpp" />
     <ClCompile Include="tool.cpp" />
     <ClCompile Include="user.cpp" />

@@ -42,6 +42,7 @@ bool UserDatabase::databaseToUsers() {
 			user->setCoins(res->getInt("coins"));
 			user->setReconstructItemAmount(res->getInt("RecItems"));
 			user->setTimeDelayItemAmount(res->getInt("TDItems"));
+			user->setPropmtItemAmount(res->getInt("PTItems"));
 
 			UserBase::getUserBase()->addUser(*user);
 
@@ -94,6 +95,9 @@ bool UserDatabase::addToDatabase(User& user) {
 		str.append("',");
 		//用户在服务器中注册的ID
 		str.append(intToString(user.getID()));
+		str.append(", ");
+		//道具数量
+		str.append(intToString(user.getPropmtItemAmount()));
 		str.append(");");
 
 		//for check
@@ -152,6 +156,8 @@ bool UserDatabase::updateToDatabase(User& user) {
 		str.append(intToString(user.getReconstructItemAmount()));
 		str.append(", TDItems=");
 		str.append(intToString(user.getTimeDelayItemAmount()));
+		str.append(", PTItems=");
+		str.append(intToString(user.getPropmtItemAmount()));
 		str.append(", clearLevel=");
 		str.append(intToString(user.getClearGameNumber()));
 		str.append(", gameScore=");

@@ -170,6 +170,14 @@ void User::setReconstructItemAmount(ushort amount) {
 	this->reconstructItemAmount = amount;
 }
 
+ushort User::getPropmtItemAmount() {
+	return this->propmtItemAmount;
+}
+
+void User::setPropmtItemAmount(ushort amount) {
+	this->propmtItemAmount = amount;
+}
+
 bool User::getLoginStatus() {
 	return this->loginStatus;
 }
