@@ -175,26 +175,20 @@ NetMsg* Client::send_ranking(NetMsg*& msg, int level) {
 		return nullptr;
 	}
 
-	std::cout << "send to server" << std::endl;
-
 	//发送信息
 	int result = send(this->socket1, send_server, BUFFER_SIZE, 0);
 	if (result < 0) {
 		return nullptr;
 	}
-	std::cout << "result_send:" << result << std::endl;
 
 	Sleep(100);
 
 	//接收服务器端的回信
 	char* recv_chars = new char[BUFFER_SIZE];
 	memset(recv_chars, 0, BUFFER_SIZE);
-	std::cout << "recv to server" << std::endl;
 	//接收信息
 	result = recv(this->socket1, recv_chars, BUFFER_SIZE, 0);
 
-	std::cout << "result_recv:" << result << std::endl;
-	std::cout << "recv_end" << std::endl;
 	if (result < 0) {
 		return nullptr;
 	}
@@ -204,8 +198,6 @@ NetMsg* Client::send_ranking(NetMsg*& msg, int level) {
 	if (counter <= 0 || recvLevel != level) {
 		return nullptr;
 	}
-	std::cout << "counter:" << counter << std::endl;
-	std::cout << "end" << std::endl;
 	return client_recv;
 }
 
@@ -220,14 +212,11 @@ bool Client::sendToServer(NetMsg*& msg) {
 		return false;
 	}
 
-	std::cout << "send to server" << std::endl;
-
 	//发送信息
 	int result = send(this->socket1, send_server, BUFFER_SIZE, 0);
 	if (result < 0) {
 		return false;
 	}
-	std::cout << "result_send:" << result << std::endl;
 	delete[] send_server;
 	return true;
 }
@@ -237,12 +226,9 @@ bool Client::recvFromServer(NetMsg*& msg) {
 	int counter = 0;
 	char* recv_chars = new char[BUFFER_SIZE];
 	memset(recv_chars, 0, BUFFER_SIZE);
-	std::cout << "recv to server" << std::endl;
 	//接收信息
 	result = recv(this->socket1, recv_chars, BUFFER_SIZE, 0);
 
-	std::cout << "result_recv:" << result << std::endl;
-	std::cout << "recv_end" << std::endl;
 	if (result < 0) {
 		return false;
 	}
@@ -251,8 +237,6 @@ bool Client::recvFromServer(NetMsg*& msg) {
 	if (counter <= 0) {
 		return false;
 	}
-	std::cout << "counter:" << counter << std::endl;
-	std::cout << "end" << std::endl;
 	delete[] recv_chars;
 	return true;
 }

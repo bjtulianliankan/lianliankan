@@ -365,7 +365,7 @@ int NetMsg::deserialize(const char* chars, int mode) {
 		this->users.push_back(*newUser);
 	}
 
-	return 0;
+	return offset;
 }
 
 /*

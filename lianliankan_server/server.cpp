@@ -95,6 +95,7 @@ void Server::start() {
 
 		SOCKADDR_IN client_addr;
 		socklen_t client_length = sizeof(client_addr);
+		LOG("服务器待机中")
 		SOCKET client = accept(this->socket1, (struct sockaddr*)&client_addr, &client_length);
 		if (client == SOCKET_ERROR) {
 			LOG("服务器网络断开")
@@ -103,21 +104,16 @@ void Server::start() {
 		char log[INET_ADDRSTRLEN];
 		std::string str = inet_ntop(PF_INET, &client_addr.sin_addr, log, sizeof(log));
 		str += "连入服务器";
-		LOG(str);
+		LOG(str)
 		int len = recv(client, recv_buf, BUFFER_SIZE, 0);
 		
-		LOG("test1");
-		std::cout << len << std::endl;
 		//创建反序列化对象
 		//确定客户端请求类型
 		NetMsg *client_request = new NetMsg();
 		//将客户端请求信息
 		//首先进行command的解析
 		//初步确定请求类型
-		std::cout << "command deser" << std::endl;
 		int command = client_request->command_deserialize(recv_buf);
-		std::cout << "command deser end" << std::endl;
-		std::cout << command << std::endl;
 		if (command !=RANKING ) {
 			//反序列化加载到对象中
 			client_request->deserialize(recv_buf, DEFAULT_MODE);
@@ -125,9 +121,6 @@ void Server::start() {
 			//解析用户发来的排行榜请求
 			client_request->server_ranking_deserialize(recv_buf, level);
 		}
-		LOG("point3");
-
-		std::cout << (command == REGISTER) << std::endl;
 
 		//返还客户端时的序列化对象指针
 		NetMsg *send_back = nullptr;
@@ -135,15 +128,12 @@ void Server::start() {
 		//此时的client_request已经时解析好的NetMsg对象了
 		switch (command) {
 		case REGISTER:
-			LOG("test2")
 			//服务器端实现用户注册
 			 send_back = userRegister(client_request);
 
 			send_back->serialize(send_buf, SECRET_MODE);
-			LOG("recv from client end")
 			//向客户端返还注册情况
 			send(client, send_buf, BUFFER_SIZE, 0);
-			LOG("send to client end")
 				
 			delete client_request;
 			delete send_back;
@@ -215,7 +205,7 @@ NetMsg* Server::userRegister(NetMsg* msg) {
 	User *user = &msg->getUsers().front();
 	//服务器端的本地LOG消息
 	std::string log = user->getUserName();
-	LOG(user->getUserName() + "请求注册")
+	LOG(log + " 请求注册")
 
 	NetMsg* send_back = new NetMsg();
 
@@ -272,14 +262,15 @@ NetMsg* Server::userLogin(NetMsg* msg) {
 	User* user = &msg->getUsers().front();
 	//服务器端的本地LOG消息
 	std::string log = user->getUserName();
+	LOG(log + " 请求登陆")
 
 	NetMsg* send_back = new NetMsg();
 
 	//从UserBase中维护的list中查询用户是否存在
-	User* user_send_back = UserBase::getUserBase()->findUser(user->getUserName());
+	User* user_send_back = UserBase::getUserBase()->findUser(user->getUserName(), user->getPassword());
 	if (user_send_back == nullptr) {
 		send_back->setCommand(LOGIN_FAIL);
-		log.append(" 无该用户，登陆失败");
+		log.append(" 用户名错误或密码错误，登陆失败");
 		LOG(log)
 		return send_back;
 	}
@@ -304,11 +295,19 @@ NetMsg* Server::userLogout(NetMsg* msg) {
 	User* user = &msg->getUsers().front();
 	//服务器端的本地LOG消息
 	std::string log = user->getUserName();
+	LOG(log + " 请求登出")
 
 	NetMsg* send_back = new NetMsg();
 
 	//该用户的登陆状态设置为登出
-	UserBase::getUserBase()->findUser(user->getUserName())->setLoginStatus(false);
+	User* user_in_server = UserBase::getUserBase()->findUser(user->getUserName(), user->getPassword());
+	if (user_in_server == nullptr) {
+		send_back->setCommand(LOGOUT_FAIL);
+		log.append("用户名或密码错误，登出失败");
+		LOG(log)
+		return send_back;
+	}
+	user_in_server->setLoginStatus(false);
 
 	//设置登出成功
 	send_back->setCommand(LOGOUT_SUCCESS);
@@ -326,17 +325,26 @@ NetMsg* Server::userdataUpdate(NetMsg* msg) {
 	User* user = &msg->getUsers().front();
 	//服务器端的本地LOG消息
 	std::string log = user->getUserName();
+	LOG(log + " 请求数据更新")
 
 	NetMsg* send_back = new NetMsg();
 
 	//建立指向该用户的指针
+	//同时用以check是否有该用户
 	User* user_in_server = UserBase::getUserBase()->findUser(user->getUserName(), user->getPassword());
+
+	if (user_in_server == nullptr) {
+		send_back->setCommand(USERDATA_UPDATE_FAIL);
+		log.append(" 用户名或密码错误，数据更新失败");
+		LOG(log)
+		return send_back;
+	}
 	
 	//更新数据库中的用户数据
 	bool result = UserDatabase::updateToDatabase(*user);
 
 	if (!result) {
-		log.append(" 数据更新失败");
+		log.append(" 用户数据库异常，数据更新失败");
 		LOG(log)
 		send_back->setCommand(USERDATA_UPDATE_FAIL);
 		return send_back;
@@ -389,6 +397,18 @@ NetMsg* Server::userRanking(NetMsg* msg, int level) {
 	NetMsg *send_back = new NetMsg();
 	
 	std::string log = user->getUserName();
+	LOG(log + " 请求用户排行榜")
+
+	//建立指向该用户的指针
+	//同时用以check是否有该用户
+	User* user_in_server = UserBase::getUserBase()->findUser(user->getUserName());
+
+	if (user_in_server == nullptr) {
+		send_back->setCommand(RANKING_FAIL);
+		log.append(" 用户名或密码错误，获取排行榜失败");
+		LOG(log)
+		return send_back;
+	}
 
 	std::vector<int> ranking = RankBase::getRankBase()->getRankByLevel(level);
 	for (std::vector<int>::iterator it =ranking.begin(); it < ranking.end(); it++) {

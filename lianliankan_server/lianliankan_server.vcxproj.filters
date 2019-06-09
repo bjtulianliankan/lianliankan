@@ -45,6 +45,9 @@
     <ClCompile Include="databaseCommon.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">

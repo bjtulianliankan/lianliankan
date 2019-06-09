@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="databaseCommon.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="rankBase.cpp" />
     <ClCompile Include="rankDatabase.cpp" />
     <ClCompile Include="tool.cpp" />
