@@ -87,7 +87,7 @@ void Server::start() {
 		//socekt断开直接退出服务器运行
 		if (!this->socket1) {
 			delete[] recv_buf;
-			return;
+			break;
 		}
 		//缓存区初始化或是缓存区清零
 		memset(recv_buf, 0, BUFFER_SIZE);
@@ -99,7 +99,7 @@ void Server::start() {
 		SOCKET client = accept(this->socket1, (struct sockaddr*)&client_addr, &client_length);
 		if (client == SOCKET_ERROR) {
 			LOG("服务器网络断开")
-			return;
+			break;
 		}
 		char log[INET_ADDRSTRLEN];
 		std::string str = inet_ntop(PF_INET, &client_addr.sin_addr, log, sizeof(log));
@@ -184,6 +184,9 @@ void Server::start() {
 			continue;
 		}
 	}
+
+	delete[] recv_buf;
+	delete[] send_buf;
 }
 
 /*
@@ -195,6 +198,13 @@ void Server::close() {
 	}
 	WSACleanup();
 	Sleep(100);
+	//关闭数据库连接
+	UserDatabase::close();
+	RankDatabase::close();
+	LOG("数据库连接正常关闭")
+	//清除在线存储的信息
+	delete UserBase::getUserBase();
+	delete RankBase::getRankBase();
 	LOG("服务器正常退出")
 }
 
@@ -218,7 +228,7 @@ NetMsg* Server::userRegister(NetMsg* msg) {
 	}
 
 	//确定新注册用的ID
-	user->setID(UserBase::getUsersLength() + 1);
+	user->setID(UserBase::getUserBase()->getUsersLength() + 1);
 
 	//写入数据库中
 	bool result = UserDatabase::addToDatabase(*user);

@@ -11,24 +11,23 @@ using namespace std;
 
 int main(void) {
 	NetMsg* send = new NetMsg();
-	User* user = new User("ClientTest", "123456");
+	User* user = new User("ClientTest5", "123456");
 	user->setClearGameNumber(3);
-	user->setCoins(1400);
-	user->setReconstructItemAmount(2);
-	user->setTimeDelayItemAmount(4);
-	user->setGameScore(2400, 1);
-	user->setGameScore(5020, 2);
-	user->setGameScore(2500, 3);
+	user->setCoins(1200);
+	user->setReconstructItemAmount(3);
+	user->setTimeDelayItemAmount(2);
+	user->setGameScore(1400, 1);
+	user->setGameScore(5120, 2);
+	user->setGameScore(2900, 3);
 	user->updateScore();
 	send->addUserToList(*user);
 	int level = 2;
 
 	Client *client = Client::getClientInstance();
 	client->start();	
-	NetMsg* newMsg = client->request(send, RANKING, level);
+	NetMsg* newMsg = client->request(send, LOGIN, level);
 	
-	cout << newMsg->getCommand() << endl;
-	if (newMsg == nullptr || newMsg->getCommand() == RANKING_FAIL) {
+	if (newMsg == nullptr || newMsg->getCommand() == LOGIN_FAIL) {
 		cout << "ÍøÂçÁ´½ÓÊ§°Ü" << endl;
 		delete send;
 		Client::getClientInstance()->close();
@@ -36,14 +35,14 @@ int main(void) {
 		return 0;
 	}
 	
-	
+	cout << newMsg->getCommand() << endl;
 	Client::getClientInstance()->close();
 	cout << "ÍøÂçÁ´½Ó³É¹¦" << endl;
 
-	for (int i = 0; i < 10; i++) {
+	/*for (int i = 0; i < 10; i++) {
 		User* user = &newMsg->getUsers()[i];
 		cout << "username:" << user->getUserName() << " score:" << user->getRankScore(level) << endl;
-	}
+	}*/
 
 	delete send;
 	delete newMsg;

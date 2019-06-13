@@ -32,16 +32,14 @@ public:
 	//获取当前用户列表的长度
 	//并起到记录当前最大用户ID
 	//用于新用户注册时确定ID
-	static int getUsersLength();
+	int getUsersLength();
 
-	//for test
-	void showAll();
 private:
 	UserBase();
 	//实现单实例
 	static UserBase* userBaseInstance;
 	//该实例中维护一个用户列表
-	static std::list<User> users;
+	std::list<User> users;
 };
 
 #endif // !USERBASE_H

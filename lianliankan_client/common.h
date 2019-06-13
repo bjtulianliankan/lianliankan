@@ -11,8 +11,8 @@
 #include <iostream>
 #pragma comment(lib, "Ws2_32.lib")
 
-//#define SERVER_IP "127.0.0.1"
-#define SERVER_IP "172.27.32.193"
+#define SERVER_IP "192.168.1.100"
+//#define SERVER_IP "172.27.96.193"
 
 #define SERVER_PORT 8888
 

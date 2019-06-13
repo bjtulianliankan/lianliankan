@@ -21,6 +21,7 @@ User::User(std::string username, std::string password) {
 	this->coins = 0;
 	this->timeDelayItemAmount = 0;
 	this->reconstructItemAmount = 0;
+	this->propmtItemAmount = 0;
 	this->loginStatus = false;
 }
 

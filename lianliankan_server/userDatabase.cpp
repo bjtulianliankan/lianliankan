@@ -191,8 +191,6 @@ bool UserDatabase::updateToDatabase(User& user) {
 
 //此方法来关闭数据库连接
 void UserDatabase::close() {
-	delete res;
-	delete stmt;
 	conn->close();
 }
 

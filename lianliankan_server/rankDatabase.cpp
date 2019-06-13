@@ -77,8 +77,6 @@ bool RankDatabase::updateToDatabase(int gameLevel, std::string rankMsg) {
 
 //关闭数据库连接
 void RankDatabase::close() {
-	delete res;
-	delete stmt;
 	conn->close();
 }
 

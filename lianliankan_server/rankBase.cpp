@@ -56,7 +56,7 @@ std::string RankBase::scoreRankToString(int gameLevel) {
 	std::string str("");
 	int count = 0;
 	int tempID = 0;
-	int length = (UserBase::getUsersLength() < 10) ? UserBase::getUsersLength() : 10;
+	int length = (UserBase::getUserBase()->getUsersLength() < 10) ? UserBase::getUserBase()->getUsersLength() : 10;
 
 	for (int i = 0; i < length; i++) {
 		tempID = this->rank[gameLevel][i];
@@ -72,7 +72,7 @@ std::string RankBase::scoreRankToString(int gameLevel) {
 bool RankBase::insertToRankBase(const int ID) {
 	if (canInsert()) {
 		for (int i = 0; i <= GAMEAMOUNT; i++) {
-			this->rank[i][UserBase::getUsersLength() - 1] = ID;
+			this->rank[i][UserBase::getUserBase()->getUsersLength() - 1] = ID;
 		}
 		return true;
 	}
@@ -82,7 +82,7 @@ bool RankBase::insertToRankBase(const int ID) {
 //检查可以被插入排行榜中
 //int表示gameLevel
 bool RankBase::canInsert() {
-	if (UserBase::getUsersLength() > 10) {
+	if (UserBase::getUserBase()->getUsersLength() > 10) {
 		return false;
 	}
 	return true;
@@ -139,7 +139,7 @@ bool RankBase::updateToRankBase(const int ID) {
 //只要对应gameLevel的分数高于当前排行榜的最后一位的分数
 //便确定更新
 bool RankBase::needToUpdate(const int ID, int gameLevel) {
-	int last = (UserBase::getUsersLength() < 10) ? UserBase::getUsersLength() - 1 : 9;
+	int last = (UserBase::getUserBase()->getUsersLength() < 10) ? UserBase::getUserBase()->getUsersLength() - 1 : 9;
 	//当排行榜的最后一位为传入的ID时
 	//直接允许更新
 	//可以保证这次的分数一定比之前的高
@@ -168,21 +168,6 @@ int RankBase::findID(int ID, int gameLevel) {
 //获取到指定gameLevel的排行榜数组
 std::vector<int>& RankBase::getRankByLevel(int level) {
 	return this->rank[level];
-}
-
-//for test
-void RankBase::showAll() {
-	int length = (UserBase::getUsersLength() < 10) ? UserBase::getUsersLength() : 10;
-	for (int i = 0; i <= RankBase::getGameAmount(); i++) {
-		std::cout << "gameLevel " << i << ": ";
-		for (int j = 0; j < length; j++) {
-			if (UserBase::getUserBase()->findUser(rank[i][j]) != nullptr) {
-				std::cout << UserBase::getUserBase()->findUser(rank[i][j])->getRankScore(i) << " ";
-			}
-			//std::cout << this->rank[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
 }
 
 int RankBase::getGameAmount() {

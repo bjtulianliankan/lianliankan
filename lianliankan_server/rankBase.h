@@ -64,9 +64,6 @@ public:
 
 	//获取到指定gameLevel的排行榜数组
 	std::vector<int>& getRankByLevel(int);
-	
-	//for test
-	void showAll();
 
 	static int getGameAmount();
 private:

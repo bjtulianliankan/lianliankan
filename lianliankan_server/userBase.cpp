@@ -7,9 +7,10 @@
 
 //静态变量初始化
 UserBase* UserBase::userBaseInstance = nullptr;
-std::list<User> UserBase::users(0);
 
-UserBase::UserBase() {}
+UserBase::UserBase() {
+	this->users.resize(0);
+}
 
 //保证获取到单实例
 UserBase* UserBase::getUserBase() {
@@ -67,12 +68,5 @@ User* UserBase::findUser(int id) {
 
 //获取当前用户列表的长度
 int UserBase::getUsersLength() {
-	return users.size();
-}
-
-//for test
-void UserBase::showAll() {
-	for (std::list<User>::iterator it = this->users.begin(); it != this->users.end(); it++) {
-		std::cout << (*it).getUserName() << " " << (*it).getPassword() << " " << (*it).getScore() << " " << (*it).getCoins() << " " << (*it).getTimeDelayItemAmount() << " " << it->getClearGameNumber();
-	}
+	return this->users.size();
 }
